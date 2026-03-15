@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="de">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content ="width=device-width, initial-scale=1.0">
+        <title>autobingo</title>
+        <link rel="stylesheet" href="master.css">
+        <link href="https://fonts.googleapis.com/css2?family=Hurricane&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <div class="top">
+            <div class="ueberschrift">
+                <h1>Autobingo</h1>
+                <img src="icons/auto.png" alt="auto" width="64" height="64">
+            </div>
+            <div>
+                <h3>Ein spiel für eine lange Autofahrt</h3>
+            </div>
+        </div>
+        <div class="middle">
+            <div class="grid" id="grid">
+            </div>
+        </div>
+        <div class="bottom">
+            <button onclick="generate()">Mischen</button>
+            <div class="bingo">
+                <h3>Bingo:</h3>
+                <h3 id="bingoCount"></h3>
+            </div>
+        </div>
+        
+        
+        <script>
+            const GRID = document.getElementById('grid')
+            const BINGO = document.getElementById('bingoCount')
+
+            const POSSIBLE_OPTIONS = [
+                "60", "90", "ampeln", "audi", "auto_dunkelblau", "auto_gelb", "auto_grau", "auto_gruen", "auto_hellblau", "auto_rot", 
+                "auto_schwarz", "Baustelle", "berg", "bmw", "bruecke", "bus", "durchfahrtverboten", "fahne", "fahrrad", "feuerwehrauto", 
+                "flugzeug", "fluss", "heißluftballon", "helikopter", "hochhaus", "hund", "industrie", "kirche", "kran", "krankenwagen", 
+                "kreisverkehr", "kuh", "lkw", "mc_donalds", "mercedes", "motorrad", "pferd", "polizei", "regen", "restaurant", "schaf",
+                "schiff", "see", "sonne", "spielplatz", "stop", "tankstelle", "taxi", "traktor", "tunnel", "ueberholverbot", "vogel",
+                "volvo", "vw", "warndreieck", "wasser_bruecke", "wc", "windrader", "wohnanhaenger", "wohnwagen", "zug"
+        
+            ]
+
+            let bingoCount = 0;
+
+            let CHOOSEN_OPTIONS = []
+
+            let BINGO_OPTIONS = {}
+
+            function generate(){
+                BINGO_OPTIONS = {};
+                GRID.innerHTML = '';
+                CHOOSEN_OPTIONS = [];
+                for (let i=0; i<36;i++){
+                    let opt_i = getRndNumber();
+                    let opt = POSSIBLE_OPTIONS[opt_i];
+                    while (CHOOSEN_OPTIONS.includes(opt)){
+                        opt_i = getRndNumber();
+                        opt = POSSIBLE_OPTIONS[opt_i];
+                    }
+                    CHOOSEN_OPTIONS.push(opt)
+                    BINGO_OPTIONS[i] = false;
+                    bingoCount = 0;
+                    BINGO.innerHTML = bingoCount;
+                    GRID.innerHTML += '<div name="" onclick="toggle(this,'+i+')" class="element"><img style="width: 32px; height: 32px;" src="icons/'+opt+'.png" alt="" class="elementImg"></div>'
+                }
+            }
+            function toggle(e, i){
+                if (e.style.border == "2px solid green"){
+                    e.style.border = "2px solid black";
+                    e.style.backgroundColor = "rgb(240, 240, 240)";
+                    bingo(i, false)
+                    BINGO_OPTIONS[i] = false;
+                } else {
+                    e.style.border = "2px solid green";
+                    e.style.backgroundColor = "rgb(169, 193, 170)";
+                    BINGO_OPTIONS[i] = true;
+                    bingo(i, true);
+                }
+            }
+            function getRndNumber(){
+                return Math.floor(Math.random() * (61))
+            }
+
+            function bingo(i, b){
+                console.log('Hallu');
+                let offset = i%6;
+                let horMin = i - offset
+                let horBingo = true;
+                for (let hi=0; hi<6; hi++){
+                    if (BINGO_OPTIONS[horMin + hi] != true){
+                        horBingo = false;
+                    }
+                }
+
+                let verBingo = true;
+                for (let vi=0; vi<6; vi++){
+                    if (BINGO_OPTIONS[offset+vi*6] != true){
+                        verBingo = false;
+                    }
+                }
+
+                if (b){
+                    if (horBingo){
+                        bingoCount += 1;
+                    }
+                    if (verBingo){
+                        bingoCount += 1;
+                    }
+                } else {
+                    if (horBingo){
+                        bingoCount -= 1;
+                    }
+                    if (verBingo){
+                        bingoCount -= 1;
+                    }
+                }
+                
+
+                BINGO.innerHTML = bingoCount;
+                console.log(bingoCount);
+            } 
+
+        </script>
+    </body>
+</html>
